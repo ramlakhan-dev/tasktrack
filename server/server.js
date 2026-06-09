@@ -1,8 +1,7 @@
+import "./src/config/evn.js";
 import app from "./src/app.js";
 import connectDB from "./src/config/database.js";
-import dotenv from "dotenv";
 
-dotenv.config();
 connectDB();
 
 const PORT = process.env.PORT || 5000;
