@@ -3,6 +3,8 @@ import crypto from "crypto";
 import sendEmail from  "../utils/sendEmail.js";
 import User from "../models/user.model.js";
 import VerificationToken from "../models/verificationtoken.model.js";
+import { generateAccessToken, generateRefreshToken } from "../utils/tokens.js";
+import RefreshToken from "../models/refreshtoken.model.js";
 
 export const registerUser = async (userData) => {
 
@@ -73,4 +75,45 @@ export const verifyEmail = async (token) => {
     });
 
     return true;
+};
+
+
+export const loginUser = async (userData) => {
+
+    const { email, password } = userData;
+
+    const user = await User.findOne({ email }).select("+password");
+
+    if (!user) {
+        throw new ApiError(401, "Invalid credentials");
+    }
+
+    if (!user.isVerified) {
+        throw new ApiError(403, "Please verify your email before logging in");
+    }
+
+    const isPasswordValid = await user.comparePassword(password);
+
+    if (!isPasswordValid) {
+        throw new ApiError(401, "Invalid credentials");
+    }
+
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
+
+    await RefreshToken.create({
+        userId: user._id,
+        token: refreshToken,
+        expiresAt: new Date(
+            Date.now() + 7 * 24 * 60 * 60 * 1000
+        )
+    });
+
+    const userObj = user.toObject();
+    delete userObj.password;
+    return {
+        user: userObj,
+        accessToken,
+        refreshToken
+    };
 };

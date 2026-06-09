@@ -1,6 +1,7 @@
 import {
     registerUser,
-    verifyEmail
+    verifyEmail,
+    loginUser
 } from "../services/auth.service.js";
 
 
@@ -31,6 +32,42 @@ export const verify = async (req, res, next) => {
                 message: "Email verified successfully"
             });
         }
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const login = async (req, res, next) => {
+    try {
+        const { user, accessToken, refreshToken } = await loginUser(req.body);
+
+        res.cookie(
+            "accessToken",
+            accessToken,
+            {
+                httpOnly: true,
+                secure: true,
+                sameSite: "strict",
+                maxAge: 15 * 60 * 1000
+            }
+        );
+
+        res.cookie(
+            "refreshToken",
+            refreshToken,
+            {
+                httpOnly: true,
+                secure: true,
+                sameSite: "strict",
+                maxAge: 7 * 24 * 60 * 60 * 1000
+            }
+        );
+
+        return res.status(200).json({
+            success: true,
+            message: "Login successful",
+            user: user
+        });
     } catch (error) {
         next(error);
     }
