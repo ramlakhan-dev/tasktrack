@@ -1,11 +1,13 @@
 import express from "express";
+import authMiddleware from "../middlewares/auth.middleware.js";
 import {
     register,
     verify,
     login,
     forgotPassword,
     resetPassword,
-    refreshAccessToken
+    refreshAccessToken,
+    logout
 } from "../controllers/auth.controller.js";
 import {
     registerValidation,
@@ -48,6 +50,12 @@ router.post(
 router.post(
     "/refresh",
     refreshAccessToken
+);
+
+router.post(
+    "/logout",
+    authMiddleware,
+    logout
 );
 
 export default router;

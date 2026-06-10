@@ -216,3 +216,14 @@ export const refreshAccessTokenUser = async (refreshToken) => {
 
     return accessToken;
 };
+
+export const logoutUser = async (refreshToken) => {
+
+    if (!refreshToken) {
+        throw new ApiError(401, "Refresh token is required");
+    }
+
+    await RefreshToken.deleteOne({
+        token: refreshToken
+    });
+};

@@ -4,7 +4,8 @@ import {
     loginUser,
     forgotPasswordUser,
     resetPasswordUser,
-    refreshAccessTokenUser
+    refreshAccessTokenUser,
+    logoutUser
 } from "../services/auth.service.js";
 
 
@@ -129,6 +130,35 @@ export const refreshAccessToken = async (req, res, next) => {
             success: true,
             message: "Token refreshed successfully"
         })
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const logout = async (req, res, next) => {
+    try {
+        const refreshToken = req.cookies.refreshToken;
+        await logoutUser(refreshToken);
+
+        res.clearCookie(
+            "accessToken", {
+                httpOnly: true,
+                secure: true,
+                sameSite: "strict"
+            }
+        );
+        res.clearCookie(
+            "refreshToken", {
+                httpOnly: true,
+                secure: true,
+                sameSite: "strict"
+            }
+        );
+
+        res.status(200).json({
+            success: true,
+            message: "Logged out successfully"
+        });
     } catch (error) {
         next(error);
     }
