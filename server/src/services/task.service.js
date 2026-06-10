@@ -13,3 +13,12 @@ export const createUserTask = async (userId, projectId, taskData) => {
 
     return task;
 };
+
+export const getUserTasks = async (userId, projectId) => {
+    const tasks = await Task.find({
+        projectId: projectId,
+        userId: userId
+    }).sort({ createdAt: -1 });
+
+    return tasks;
+};

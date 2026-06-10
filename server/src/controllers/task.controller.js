@@ -1,5 +1,6 @@
 import {
-    createUserTask
+    createUserTask,
+    getUserTasks
 } from "../services/task.service.js";
 
 export const createTask = async (req, res, next) => {
@@ -10,6 +11,19 @@ export const createTask = async (req, res, next) => {
             success: true,
             message: "Task created successfully",
             data: task
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const getTasks = async (req, res, next) => {
+    try {
+        const tasks = await getUserTasks(req.user._id, req.params.projectId);
+        res.status(200).json({
+            success: true,
+            message: "Tasks fetched successfully",
+            data: tasks
         });
     } catch (error) {
         next(error);
