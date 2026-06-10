@@ -19,3 +19,12 @@ export const getUserProjects = async (userId) => {
     
     return projects;
 };
+
+export const getUserProject = async (userId, projectId) => {
+    const project = await Project.findOne({
+        _id: projectId,
+        userId: userId
+    });
+
+    return project;
+};
