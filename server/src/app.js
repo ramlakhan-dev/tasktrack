@@ -2,13 +2,18 @@ import express from "express";
 import authRoutes from "./routes/auth.routes.js";
 import cookieParser from "cookie-parser";
 import errorHandler from "./middlewares/errorHandler.js";
+import userRoutes from "./routes/user.routes.js";
+import path from "path";
 
 const app = express();
+
+app.use("/uploads", express.static(path.resolve("uploads")));
 
 app.use(express.json());
 app.use(cookieParser());
 
 app.use("/api/v1/auth", authRoutes);
+app.use("/api/v1/users", userRoutes);
 
 app.get("/api/v1/health", (req, res) => {
     res.status(200).json({
