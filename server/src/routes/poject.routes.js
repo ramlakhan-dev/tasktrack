@@ -3,7 +3,8 @@ import authMiddleware from "../middlewares/auth.middleware.js";
 import {
     createProject,
     getProject,
-    getProjects
+    getProjects,
+    updateProject
 } from "../controllers/project.controller.js";
 
 const router = express.Router();
@@ -23,6 +24,11 @@ router.get(
 router.get(
     "/:projectId",
     getProject
+);
+
+router.patch(
+    "/:projectId",
+    updateProject
 );
 
 export default router;

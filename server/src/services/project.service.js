@@ -28,3 +28,20 @@ export const getUserProject = async (userId, projectId) => {
 
     return project;
 };
+
+export const updateUserProject = async (userId, projectId, projectData) => {
+    
+    const project = await Project.findOneAndUpdate(
+        {
+            _id: projectId,
+            userId: userId
+        },
+        projectData,
+        {
+            new: true,
+            runValidators: true
+        }
+    );
+
+    return project;
+};

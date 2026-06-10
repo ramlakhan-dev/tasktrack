@@ -1,7 +1,8 @@
 import {
     createUserProject,
     getUserProject,
-    getUserProjects
+    getUserProjects,
+    updateUserProject
 } from "../services/project.service.js";
 
 export const createProject = async (req, res, next) => {
@@ -45,6 +46,25 @@ export const getProject = async (req, res, next) => {
         res.status(200).json({
             success: true,
             message: "Project fetched successfully",
+            data: project
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const updateProject = async (req, res, next) => {
+    try {
+        const project = await updateUserProject(req.user._id, req.params.projectId, req.body);
+        if (!project) {
+            return res.status(404).json({
+                success: false,
+                message: "Project not found"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
             data: project
         });
     } catch (error) {
