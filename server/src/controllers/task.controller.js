@@ -1,6 +1,7 @@
 import {
     createUserTask,
-    getUserTasks
+    getUserTasks,
+    updateUserTask
 } from "../services/task.service.js";
 
 export const createTask = async (req, res, next) => {
@@ -24,6 +25,26 @@ export const getTasks = async (req, res, next) => {
             success: true,
             message: "Tasks fetched successfully",
             data: tasks
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const updateTask = async (req, res, next) => {
+    try {
+        const task = await updateUserTask(req.user._id, req.params.projectId, req.params.taskId, req.body);
+        if (!task) {
+            return res.status(404).json({
+                success: false,
+                message: "Task not found"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            message: "Task updated successfully",
+            data: task
         });
     } catch (error) {
         next(error);

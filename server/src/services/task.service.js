@@ -22,3 +22,20 @@ export const getUserTasks = async (userId, projectId) => {
 
     return tasks;
 };
+
+export const updateUserTask = async (userId, projectId, taskId, taskData) => {
+    const task = await Task.findOneAndUpdate(
+        {
+            _id: taskId,
+            projectId: projectId,
+            userId: userId
+        },
+        taskData,
+        {
+            new: true,
+            runValidators: true
+        }
+    );
+
+    return task;
+};
