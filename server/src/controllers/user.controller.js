@@ -1,6 +1,7 @@
 import {
     updateUserProfile,
-    getUserProfile
+    getUserProfile,
+    changeUserPassword
 } from "../services/user.service.js";
 
 export const updateProfile = async (req, res, next) => {
@@ -23,6 +24,25 @@ export const getProfile = async (req, res, next) => {
         res.status(200).json({
             success: true,
             data: user
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const changePassword = async (req, res, next) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+
+        await changeUserPassword(
+            req.user._id,
+            currentPassword,
+            newPassword
+        );
+
+        res.status(200).json({
+            success: true,
+            message: "Password changed successfully"
         });
     } catch (error) {
         next(error);

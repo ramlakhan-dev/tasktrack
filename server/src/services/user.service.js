@@ -1,3 +1,4 @@
+import bcrypt from "bcrypt";
 import User from "../models/user.model.js";
 import ApiError from "../utils/apiError.js";
 
@@ -25,4 +26,20 @@ export const getUserProfile = async (userId) => {
         throw new ApiError(404, "User not found");
     }
     return user;
+};
+
+export const changeUserPassword = async (userId, currentPassword, newPassword) => {
+    const user = await User.findById(userId).select("+password");
+
+    const isMatch = await bcrypt.compare(
+        currentPassword,
+        user.password
+    );
+
+    if (!isMatch) {
+        throw new ApiError(400, "Current password is incorrect");
+    }
+
+    user.password = newPassword;
+    await user.save();
 };
