@@ -3,6 +3,8 @@ import authRoutes from "./routes/auth.routes.js";
 import cookieParser from "cookie-parser";
 import errorHandler from "./middlewares/errorHandler.js";
 import userRoutes from "./routes/user.routes.js";
+import projectRoutes from "./routes/poject.routes.js";
+import taskRoutes from "./routes/task.routes.js";
 import path from "path";
 
 const app = express();
@@ -14,6 +16,8 @@ app.use(cookieParser());
 
 app.use("/api/v1/auth", authRoutes);
 app.use("/api/v1/users", userRoutes);
+app.use("/api/v1/projects", projectRoutes);
+app.use("/api/v1/projects/:projectId/tasks", taskRoutes);
 
 app.get("/api/v1/health", (req, res) => {
     res.status(200).json({
