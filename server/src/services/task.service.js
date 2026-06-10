@@ -39,3 +39,13 @@ export const updateUserTask = async (userId, projectId, taskId, taskData) => {
 
     return task;
 };
+
+export const deleteUserTask = async (userId, projectId, taskId) => {
+    const task = await Task.findOneAndDelete({
+        _id: taskId,
+        projectId: projectId,
+        userId: userId
+    });
+    
+    return task;
+};

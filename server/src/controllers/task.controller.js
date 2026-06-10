@@ -1,5 +1,6 @@
 import {
     createUserTask,
+    deleteUserTask,
     getUserTasks,
     updateUserTask
 } from "../services/task.service.js";
@@ -46,6 +47,23 @@ export const updateTask = async (req, res, next) => {
             message: "Task updated successfully",
             data: task
         });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const deleteTask = async (req, res, next) => {
+    try {
+        const task = await deleteUserTask(req.user._id, req.params.projectId, req.params.taskId);
+
+        if (!task) {
+            return res.status(404).json({
+                success: false,
+                message: "Task not found"
+            });
+        }
+
+        res.status(204).send();
     } catch (error) {
         next(error);
     }
