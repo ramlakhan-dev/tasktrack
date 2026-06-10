@@ -1,5 +1,5 @@
 import express from "express";
-import { updateProfile, getProfile, changePassword } from "../controllers/user.controller.js";
+import { updateProfile, getProfile, changePassword, deleteAccount } from "../controllers/user.controller.js";
 import { uploadAvatar } from "../middlewares/upload.middleware.js";
 import authMiddleware from "../middlewares/auth.middleware.js";
 
@@ -22,6 +22,12 @@ router.patch(
     "/change-password",
     authMiddleware,
     changePassword
+);
+
+router.delete(
+    "/account",
+    authMiddleware,
+    deleteAccount
 );
 
 export default router;

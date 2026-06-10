@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import User from "../models/user.model.js";
 import ApiError from "../utils/apiError.js";
+import RefreshToken from "../models/refreshtoken.model.js";
 
 export const updateUserProfile = async (userId, data, file) => {
     
@@ -42,4 +43,22 @@ export const changeUserPassword = async (userId, currentPassword, newPassword) =
 
     user.password = newPassword;
     await user.save();
+};
+
+export const deleteUserAccount = async (userId, password) => {
+    const user = await User.findById(userId).select("+password");
+
+    const isMatch = await bcrypt.compare(
+        password,
+        user.password
+    );
+
+    if (!isMatch) {
+        throw new ApiError(400, "Invalid password");
+    }
+
+    await User.findByIdAndDelete(userId);
+    await RefreshToken.deleteMany({
+        userId: user._id
+    });
 };

@@ -1,7 +1,8 @@
 import {
     updateUserProfile,
     getUserProfile,
-    changeUserPassword
+    changeUserPassword,
+    deleteUserAccount
 } from "../services/user.service.js";
 
 export const updateProfile = async (req, res, next) => {
@@ -44,6 +45,36 @@ export const changePassword = async (req, res, next) => {
             success: true,
             message: "Password changed successfully"
         });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const deleteAccount = async (req, res, next) => {
+    try {
+        const { password } = req.body;
+
+        await deleteUserAccount(req.user._id, password);
+
+        res.clearCookie(
+            "accessToken",
+            {
+                httpOnly: true,
+                secure: true,
+                sameSite: "strict"
+            }
+        );
+
+        res.clearCookie(
+            "refreshToken",
+            {
+                httpOnly: true,
+                secure: true,
+                sameSite: "strict"
+            }
+        );
+
+        res.status(204).send();
     } catch (error) {
         next(error);
     }
