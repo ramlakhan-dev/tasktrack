@@ -12,3 +12,10 @@ export const createUserProject = async (userId, projectDate) => {
     return project;
 };
 
+export const getUserProjects = async (userId) => {
+    const projects = await Project.find({
+        userId
+    }).sort({ createdAt: -1 });
+    
+    return projects;
+};
