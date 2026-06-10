@@ -2,6 +2,7 @@ import express from "express";
 import authMiddleware from "../middlewares/auth.middleware.js";
 import {
     createProject,
+    deleteProject,
     getProject,
     getProjects,
     updateProject
@@ -29,6 +30,11 @@ router.get(
 router.patch(
     "/:projectId",
     updateProject
+);
+
+router.delete(
+    "/:projectId",
+    deleteProject
 );
 
 export default router;

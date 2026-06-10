@@ -1,5 +1,6 @@
 import {
     createUserProject,
+    deleteUserProject,
     getUserProject,
     getUserProjects,
     updateUserProject
@@ -67,6 +68,22 @@ export const updateProject = async (req, res, next) => {
             success: true,
             data: project
         });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const deleteProject = async (req, res, next) => {
+    try {
+        const project = await deleteUserProject(req.user._id, req.params.projectId);
+        if (!project) {
+            return res.status(404).json({
+                success: true,
+                message: "Project not found"
+            });
+        }
+
+        res.status(204).send();
     } catch (error) {
         next(error);
     }

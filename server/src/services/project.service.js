@@ -45,3 +45,10 @@ export const updateUserProject = async (userId, projectId, projectData) => {
 
     return project;
 };
+
+export const deleteUserProject = async (userId, projectId) => { 
+    return await Project.findOneAndDelete({
+        _id: projectId,
+        userId: userId
+    });
+};
