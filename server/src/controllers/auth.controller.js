@@ -3,7 +3,8 @@ import {
     verifyEmail,
     loginUser,
     forgotPasswordUser,
-    resetPasswordUser
+    resetPasswordUser,
+    refreshAccessTokenUser
 } from "../services/auth.service.js";
 
 
@@ -102,6 +103,32 @@ export const resetPassword = async (req, res, next) => {
                 message: "Password reset successful"
             });
         }
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const refreshAccessToken = async (req, res, next) => {
+    try {
+        const refreshToken = req.cookies.refreshToken;
+
+        const accessToken = await refreshAccessTokenUser(refreshToken);
+
+        res.cookie(
+            "accessToken",
+            accessToken,
+            {
+                httpOnly: true,
+                secure: true,
+                sameSite: "strict",
+                maxAge: 15 * 60 * 1000 
+            }
+        )
+
+        res.status(200).json({
+            success: true,
+            message: "Token refreshed successfully"
+        })
     } catch (error) {
         next(error);
     }

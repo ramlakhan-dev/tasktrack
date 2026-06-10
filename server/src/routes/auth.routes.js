@@ -4,7 +4,8 @@ import {
     verify,
     login,
     forgotPassword,
-    resetPassword
+    resetPassword,
+    refreshAccessToken
 } from "../controllers/auth.controller.js";
 import {
     registerValidation,
@@ -42,6 +43,11 @@ router.post(
     resetPasswordValidation,
     validate,
     resetPassword
+);
+
+router.post(
+    "/refresh",
+    refreshAccessToken
 );
 
 export default router;

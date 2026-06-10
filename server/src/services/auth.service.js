@@ -6,6 +6,7 @@ import VerificationToken from "../models/verificationtoken.model.js";
 import { generateAccessToken, generateRefreshToken } from "../utils/tokens.js";
 import RefreshToken from "../models/refreshtoken.model.js";
 import ResetPasswordToken from "../models/resetpasstoken.model.js";
+import jwt from "jsonwebtoken";
 
 export const registerUser = async (userData) => {
 
@@ -184,4 +185,34 @@ export const resetPasswordUser = async (token, password) => {
     });
 
     return true;
+};
+
+
+export const refreshAccessTokenUser = async (refreshToken) => {
+
+    if (!refreshToken) {
+        throw new ApiError(401, "Refresh token is required");
+    }
+
+    let payload;
+    try {
+        payload = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    } catch (error) {
+        throw new ApiError(401, "Invalid or expired refresh token");
+    }
+
+    const tokenRecord = await RefreshToken.findOne({ token: refreshToken });
+
+    if (!tokenRecord) {
+        throw new ApiError(401, "Refresh token not found");
+    }
+
+    const user = await User.findById(payload.userId);
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
+
+    const accessToken = generateAccessToken(user);
+
+    return accessToken;
 };
