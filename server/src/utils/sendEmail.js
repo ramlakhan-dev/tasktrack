@@ -37,4 +37,30 @@ const sendMail = async (userEmail, verificationLink) => {
     });
 }
 
+export const sendResetPassMail = async (userEmail, resetPasswordLink) => {
+    await transporter.sendMail({
+        from: `"TaskTrack" <${process.env.EMAIL_USER}>`,
+        to: userEmail,
+        subject: "Password Reset",
+        html: `
+            <h2>Password Reset Request</h2>
+            <p>Click the button below to reset your password:</p>
+            <a href="${resetPasswordLink}"
+                style="
+                    display:inline-block;
+                    padding: 10px 20px;
+                    background: #2563eb;
+                    color: white;
+                    text-decoration: none;
+                    border-radius: 5px;
+                "
+            >
+                Reset Password
+            </a>
+            
+            <p>This link expires in 15 minutes.</p>
+        `
+    })
+};
+
 export default sendMail;

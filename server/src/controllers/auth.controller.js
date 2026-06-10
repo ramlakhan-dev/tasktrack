@@ -1,7 +1,9 @@
 import {
     registerUser,
     verifyEmail,
-    loginUser
+    loginUser,
+    forgotPasswordUser,
+    resetPasswordUser
 } from "../services/auth.service.js";
 
 
@@ -68,6 +70,38 @@ export const login = async (req, res, next) => {
             message: "Login successful",
             user: user
         });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const forgotPassword = async (req, res, next) => {
+    try {
+        const { email } = req.body;
+
+        await forgotPasswordUser(email);
+
+        res.status(200).json({
+            success: true,
+            message: "Password reset link sent. Please check your email"
+        });
+    } catch (error) {
+        next(error);
+    }
+};
+
+export const resetPassword = async (req, res, next) => {
+    try {
+        const { token } = req.query;
+        const { password } = req.body;
+
+        const isPasswordReset = await resetPasswordUser(token, password);
+        if (isPasswordReset) {
+            return res.status(200).json({
+                success: true,
+                message: "Password reset successful"
+            });
+        }
     } catch (error) {
         next(error);
     }

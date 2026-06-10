@@ -1,10 +1,11 @@
 import ApiError from "../utils/apiError.js";
 import crypto from "crypto";
-import sendEmail from  "../utils/sendEmail.js";
+import sendEmail, { sendResetPassMail } from  "../utils/sendEmail.js";
 import User from "../models/user.model.js";
 import VerificationToken from "../models/verificationtoken.model.js";
 import { generateAccessToken, generateRefreshToken } from "../utils/tokens.js";
 import RefreshToken from "../models/refreshtoken.model.js";
+import ResetPasswordToken from "../models/resetpasstoken.model.js";
 
 export const registerUser = async (userData) => {
 
@@ -116,4 +117,71 @@ export const loginUser = async (userData) => {
         accessToken,
         refreshToken
     };
+};
+
+
+export const forgotPasswordUser = async (email) => {
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
+
+    const token = crypto.randomBytes(32).toString("hex");
+
+    const hashedToken = crypto
+        .createHash("sha256")
+        .update(token)
+        .digest("hex");
+    
+    await ResetPasswordToken.create({
+        userId: user._id,
+        token: hashedToken,
+        expiresAt: new Date(
+            Date.now() + 15 * 60 * 1000
+        )
+    });
+
+    const resetPasswordLink = `${process.env.CLIENT_URL}/reset-password?token=${token}`
+
+    await sendResetPassMail(user.email, resetPasswordLink);
+};
+
+
+export const resetPasswordUser = async (token, password) => {
+
+    const hashedToken = crypto
+        .createHash("sha256")
+        .update(token)
+        .digest("hex");
+    
+    const resetPasswordRecord = await ResetPasswordToken.findOne({
+        token: hashedToken
+    });
+
+    if (!resetPasswordRecord) {
+        throw new ApiError(400, "Invalid reset password token");
+    }
+
+    if (resetPasswordRecord.expiresAt < new Date()) {
+        await ResetPasswordToken.deleteOne({
+            _id: resetPasswordRecord._id
+        });
+        throw new ApiError(400, "Reset password token expired");
+    }
+
+    const user = await User.findById(resetPasswordRecord.userId);
+
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
+    user.password = password;
+
+    await user.save();
+    await ResetPasswordToken.deleteOne({
+            _id: resetPasswordRecord._id
+    });
+
+    return true;
 };
